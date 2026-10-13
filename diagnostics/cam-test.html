@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><title>摄像头自检</title>
+<style>
+  body { font: 14px/1.8 "Microsoft YaHei", sans-serif; padding: 30px; background: #f7efdc; color: #3a2a1a; }
+  pre { background: #fffdf6; border: 1px solid #e4d3ab; border-radius: 10px; padding: 16px; white-space: pre-wrap; }
+  .ok { color: #2e7d32; } .bad { color: #a03028; }
+</style>
+</head>
+<body>
+<h2>📷 摄像头自检</h2>
+<p>本页会依次检查：安全上下文 → 浏览器支持 → 摄像头设备 → 实际取流。若浏览器弹出授权询问，请点「允许」。</p>
+<pre id="out">检测中…</pre>
+<script>
+(async () => {
+  const lines = [];
+  const withTimeout = (p, ms) => Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error('TimeoutError')), ms))]);
+  const ok = t => lines.push('✔ ' + t);
+  const bad = t => lines.push('✘ ' + t);
+  const sec = window.isSecureContext;
+  lines.push(sec ? '✔ 安全上下文（localhost 或 https），摄像头可用' : '✘ 非安全上下文：浏览器禁止摄像头。请用 http://localhost:8080 访问，局域网 IP 的 http 不支持摄像头');
+  lines.push(navigator.mediaDevices ? '✔ 浏览器支持摄像头 API' : '✘ 浏览器不支持摄像头 API');
+  if (navigator.mediaDevices) {
+    try {
+      const devs = await withTimeout(navigator.mediaDevices.enumerateDevices(), 5000);
+      const cams = devs.filter(d => d.kind === 'videoinput');
+      if (cams.length) { ok('检测到摄像头 ' + cams.length + ' 个：' + cams.map(c => c.label || '(未命名)').join('、')); }
+      else bad('没有检测到任何摄像头设备（未连接/驱动问题/被系统禁用）');
+    } catch (e) { bad('枚举设备失败：' + (e.name === 'TimeoutError' ? '检测超时' : e.name)); }
+    try {
+      const stream = await withTimeout(navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 } }), 8000);
+      ok('getUserMedia 取流成功！摄像头本身工作正常，问题在别处（手势模型加载等）');
+      stream.getTracks().forEach(t => t.stop());
+    } catch (e) {
+      const why = {
+        NotAllowedError: '权限被拒绝：地址栏点允许；或 Windows 设置 → 隐私和安全性 → 相机 → 打开「相机访问」与「允许桌面应用访问相机」',
+        NotFoundError: '找不到摄像头设备：检查连接 / 设备管理器 / 相机驱动',
+        NotReadableError: '摄像头被其他程序占用：关闭微信、腾讯会议、相机 App 等再试',
+        SecurityError: '非安全上下文，浏览器禁止',
+      }[e.name] || e.message;
+      bad('取流失败 [' + e.name + ']：' + why);
+    }
+  }
+  document.getElementById('out').textContent = lines.join('\n');
+  document.getElementById('out').innerHTML = lines.map(l =>
+    l.startsWith('✘') ? '<span class="bad">' + l + '</span>' : '<span class="ok">' + l + '</span>'
+  ).join('<br>');
+})();
+</script>
+</body>
+</html>

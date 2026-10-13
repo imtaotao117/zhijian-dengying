@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>《指尖灯影》—— 手势交互数字皮影戏</title>
+<meta name="description" content="国家级非遗皮影戏手势交互数字体验：隔空操影、演绎经典、拼装皮影、学习非遗。第十四届全国大学生数字媒体科技作品及创意竞赛·命题五作品。">
+<!-- 本地打包：霞鹜文楷（OFL 免费商用授权） -->
+<link rel="stylesheet" href="assets/fonts/lxgw/lxgwwenkai-regular.css">
+<link rel="stylesheet" href="assets/fonts/lxgw/lxgwwenkai-bold.css">
+<!-- 正式版保持完全离线，不再请求第三方在线字体。 -->
+<link rel="stylesheet" href="css/style.css?v=20261011">
+</head>
+<body>
+
+<!-- 顶部导航 -->
+<header id="topbar">
+  <div class="brand">
+    <span class="brand-lantern" aria-hidden="true"></span>
+    <h1>指尖灯影</h1>
+    <span class="brand-sub">非遗皮影 · 手势交互数字体验</span>
+  </div>
+  <button id="btn-nav-toggle" class="nav-toggle" type="button" aria-controls="nav" aria-expanded="false" aria-label="打开导航菜单">
+    <span></span><span></span><span></span>
+  </button>
+  <nav id="nav">
+    <a href="#/home" data-view="home">首页</a>
+    <a href="#/drama" data-view="drama">经典剧目</a>
+    <a href="#/stage" data-view="stage">自由操影</a>
+    <a href="#/workshop" data-view="workshop">皮影工坊</a>
+    <a href="#/joints" data-view="joints">关节工坊</a>
+    <a href="#/classroom" data-view="classroom">非遗课堂</a>
+  </nav>
+  <div class="topbar-tools">
+    <button id="btn-camera" class="tool-btn tool-camera" title="开启摄像头手势识别（需摄像头）">摄像头</button>
+    <button id="btn-sound" class="tool-btn tool-sound" title="声音开关">声音</button>
+    <span id="input-mode" class="input-mode" title="当前操控方式">鼠标模式</span>
+  </div>
+</header>
+
+<main id="main">
+  <!-- 首页 -->
+  <section id="view-home" class="view active">
+    <div class="home-hero">
+      <div class="home-title-box">
+        <p class="home-kicker">第十四届全国大学生数字媒体科技作品及创意竞赛 · 命题五「民族文化·创新表达」</p>
+        <h2 class="home-title">指尖灯影</h2>
+        <p class="home-subtitle">—— 手势交互数字皮影戏</p>
+        <p class="home-slogan">打开摄像头、抬起手掌，隔空「操影」，人人都是皮影传承人。</p>
+        <div class="home-btns">
+          <a class="btn btn-primary" href="#/drama">看一出好戏</a>
+          <a class="btn btn-ghost" href="#/stage">徒手操影</a>
+        </div>
+      </div>
+      <div class="home-stage" aria-hidden="true">
+        <div id="home-puppet" class="home-puppet"></div>
+        <div class="home-lamp-glow"></div>
+      </div>
+    </div>
+    <div class="home-cards">
+      <a class="card" href="#/drama">
+        <img class="card-ico" src="assets/icons/drama.svg" alt="">
+        <h3>经典剧目</h3>
+        <p>《三打白骨精》《大闹天宫》《哪吒闹海》引导式体验，手势「拍板」推进剧情。</p>
+      </a>
+      <a class="card" href="#/stage">
+        <img class="card-ico" src="assets/icons/gesture.svg" alt="">
+        <h3>自由操影</h3>
+        <p>摄像头手势隔空操控：行走、跳跃、亮相，支持双人同屏对戏。</p>
+      </a>
+      <a class="card" href="#/workshop">
+        <img class="card-ico" src="assets/icons/workshop.svg" alt="">
+        <h3>皮影工坊</h3>
+        <p>头茬、身段、兵器、敷彩自由拼装，打造你的专属皮影并导入舞台。</p>
+      </a>
+      <a class="card" href="#/joints">
+        <img class="card-ico" src="assets/icons/joints.svg" alt="">
+        <h3>关节工坊</h3>
+        <p>拖动关节任意摆弄皮影，隔空操骨，挑战戏曲亮相，拍板定格出你的小动画。</p>
+      </a>
+      <a class="card" href="#/classroom">
+        <img class="card-ico" src="assets/icons/classroom.svg" alt="">
+        <h3>非遗课堂</h3>
+        <p>历史沿革、全国流派地图、制作八道工序，玩中学，学中传。</p>
+      </a>
+    </div>
+    <div class="home-note">
+      <p>💡 小提示：点击右上角「📷 摄像头」开启手势识别，即可隔空操影；没有摄像头也能用鼠标 / 触屏完整体验。</p>
+      <button id="btn-quick-guide" class="btn btn-mini" type="button">查看新手引导</button>
+    </div>
+  </section>
+
+  <!-- 经典剧目 · 选戏目录（独立界面，不叠压舞台） -->
+  <section id="view-drama" class="view">
+    <div class="drama-cat-wrap">
+      <h2 class="drama-cat-h2">点一出好戏</h2>
+      <p class="drama-cat-sub">—— 剧目目录 · 拍板开锣 ——</p>
+      <div class="drama-cat-controls">
+        <button id="btn-demo-mode" class="btn btn-mini btn-primary" type="button" aria-pressed="true">评审演示模式：开</button>
+        <span id="demo-mode-note">每出约 60–90 秒，互动更紧凑</span>
+      </div>
+      <div class="drama-cat-list" id="drama-cat-list"></div>
+      <p class="drama-cat-tip">💡 演出中伸一指 / 点击屏幕 / 按空格，即为「拍板」推进剧情</p>
+    </div>
+  </section>
+
+  <!-- 经典剧目 · 演出舞台 -->
+  <section id="view-play" class="view">
+    <div class="stage-wrap">
+      <canvas id="cv-drama"></canvas>
+      <div class="curtain-l"></div><div class="curtain-r"></div>
+      <div class="drama-hud" id="drama-hud"></div>
+      <div class="drama-title" id="drama-title"></div>
+      <div class="drama-sub" id="drama-sub"></div>
+      <div class="drama-cue" id="drama-cue"></div>
+      <div class="drama-skip">
+        <button id="btn-drama-mode" class="btn btn-mini" type="button">演示模式</button>
+        <button id="btn-drama-restart" class="btn btn-mini">重演</button>
+        <button id="btn-drama-exit" class="btn btn-mini">回目录</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 自由操影 -->
+  <section id="view-stage" class="view">
+    <div class="stage-wrap">
+      <canvas id="cv-stage"></canvas>
+      <div class="curtain-l"></div><div class="curtain-r"></div>
+      <div class="stage-hints" id="stage-hints"></div>
+      <div class="stage-tools">
+        <button id="btn-stage-puppet" class="btn btn-mini">换皮影</button>
+        <button id="btn-stage-dual" class="btn btn-mini">双人同屏</button>
+        <button id="btn-stage-pose" class="btn btn-mini">亮相</button>
+        <button id="btn-stage-scene" class="btn btn-mini">场景·旷野</button>
+        <span class="stage-tools-note" id="stage-tools-note"></span>
+      </div>
+      <div class="char-picker hidden" id="char-picker">
+        <div class="char-picker-head">
+          <span>选一个皮影上场</span>
+          <button id="btn-char-close" class="btn btn-mini">✕</button>
+        </div>
+        <div class="char-picker-grid" id="char-picker-grid"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 皮影工坊 -->
+  <section id="view-workshop" class="view">
+    <div class="workshop-layout">
+      <div class="ws-left">
+        <div class="ws-preview-box">
+          <p class="ws-preview-label">预览</p>
+          <canvas id="cv-ws-preview"></canvas>
+        </div>
+        <div class="ws-assemble">
+          <label>给你的皮影起个名字
+            <input id="ws-name" maxlength="12" placeholder="如：齐天大圣">
+          </label>
+          <div class="ws-btns">
+            <button id="ws-random" class="btn btn-mini">随机组合</button>
+            <button id="ws-save" class="btn btn-primary btn-mini">保存皮影</button>
+            <button id="ws-to-stage" class="btn btn-mini">导入舞台</button>
+          </div>
+        </div>
+        <div class="ws-mine">
+          <h3>我的皮影</h3>
+          <div id="ws-mine-list" class="ws-mine-list"></div>
+        </div>
+      </div>
+      <div class="ws-right">
+        <div class="ws-part-group">
+          <h3>经典角色 · 一键整装</h3>
+          <div id="ws-classic" class="ws-grid"></div>
+        </div>
+        <div class="ws-part-group">
+          <h3>一 · 选头茬</h3>
+          <div id="ws-heads" class="ws-grid"></div>
+        </div>
+        <div class="ws-part-group">
+          <h3>二 · 选身段</h3>
+          <div id="ws-bodies" class="ws-grid"></div>
+        </div>
+        <div class="ws-part-group">
+          <h3>三 · 选兵器</h3>
+          <div id="ws-weapons" class="ws-grid"></div>
+        </div>
+        <div class="ws-part-group">
+          <h3>四 · 敷彩上色</h3>
+          <div id="ws-palettes" class="ws-palettes"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 关节工坊：任意活动皮影关节 + 三层玩法 -->
+  <section id="view-joints" class="view">
+    <div class="joints-layout">
+      <div class="joints-stage-box" id="joints-stage-box">
+        <canvas id="cv-joints"></canvas>
+        <div id="joints-handles"></div>
+        <div class="joints-hud" id="joints-hud"></div>
+      </div>
+      <div class="joints-side">
+        <div class="jt-tabs">
+          <button class="jt-tab sel" id="jt-tab-free">自由摆弄</button>
+          <button class="jt-tab" id="jt-tab-ch">亮相挑战</button>
+          <button class="jt-tab" id="jt-tab-mo">定格动画</button>
+        </div>
+        <div class="jt-panel" id="jt-panel-free">
+          <h3>选角色</h3>
+          <div class="jt-chars" id="jt-chars"></div>
+          <h3>操杆工具</h3>
+          <div class="jt-tools">
+            <button id="jt-reset" class="btn btn-mini">复位</button>
+            <button id="jt-random" class="btn btn-mini">随机乱舞</button>
+            <button id="jt-mirror" class="btn btn-mini">镜像</button>
+            <button id="jt-savepose" class="btn btn-mini">保存造型</button>
+            <button id="jt-export" class="btn btn-mini">导出图片</button>
+            <button id="jt-gesture" class="btn btn-mini">✋ 隔空操骨</button>
+          </div>
+          <div class="jt-presets" id="jt-presets"></div>
+          <h3>造型库</h3>
+          <div class="jt-pose-list" id="jt-pose-list"></div>
+        </div>
+        <div class="jt-panel hidden" id="jt-panel-ch">
+          <p class="jt-tip">拖动关节，照着金色残影摆出戏曲亮相，点「定形」评分</p>
+          <div class="jt-levels" id="jt-levels"></div>
+          <div class="jt-ch-hud" id="jt-ch-hud"></div>
+          <button id="jt-lock" class="btn btn-primary btn-mini hidden">📌 定形</button>
+          <button id="jt-retry" class="btn btn-primary btn-mini hidden">🔁 再挑战</button>
+          <div id="jt-badge" class="hidden">🏆 影偶名师</div>
+        </div>
+        <div class="jt-panel hidden" id="jt-panel-mo">
+          <p class="jt-tip">摆好姿势点「拍板定格」记下一帧，逐帧连成小动画</p>
+          <div class="jt-tools">
+            <button id="jt-capture" class="btn btn-primary btn-mini">📋 拍板定格</button>
+            <button id="jt-play" class="btn btn-mini">▶ 播放</button>
+            <button id="jt-loop" class="btn btn-mini">🔁 循环</button>
+            <button id="jt-speed" class="btn btn-mini">1×</button>
+            <button id="jt-saveanim" class="btn btn-mini">保存动画</button>
+            <button id="jt-clear" class="btn btn-mini">清空</button>
+          </div>
+          <h3>一键生成</h3>
+          <div class="jt-tools">
+            <button id="jt-gen-walk" class="btn btn-mini">🚶 行走</button>
+            <button id="jt-gen-jump" class="btn btn-mini">🤸 跳跃</button>
+            <button id="jt-gen-spin" class="btn btn-mini">🥢 耍棒</button>
+          </div>
+          <h3>时间轴</h3>
+          <div class="jt-timeline" id="jt-timeline"></div>
+          <h3>我的动画</h3>
+          <div class="jt-anim-list" id="jt-anim-list"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 非遗课堂 -->
+  <section id="view-classroom" class="view">
+    <div class="cls-wrap">
+      <h2 class="cls-h2">非遗课堂</h2>
+      <div class="cls-block cls-search" aria-labelledby="cls-search-heading">
+        <h3 id="cls-search-heading">搜索与问答</h3>
+        <p class="cls-desc">搜索下方的历史、流派和制作工序；也可向 DeepSeek 提问皮影知识。</p>
+        <form id="cls-search-form" class="cls-search-form" role="search">
+          <label for="cls-search-input" class="visually-hidden">搜索非遗课堂资料</label>
+          <input id="cls-search-input" type="search" maxlength="200" placeholder="例如：皮影起源、华县皮影、镂刻" autocomplete="off">
+          <button type="submit">搜索课堂</button>
+          <button type="button" id="cls-ask-button" class="cls-ask-button">问 DeepSeek</button>
+        </form>
+        <p class="cls-search-note">“问 DeepSeek”会将你输入的问题发送至 DeepSeek API，可能产生调用费用；回答由 AI 生成，请核对下方资料来源。此功能不进行实时联网检索。</p>
+        <p id="cls-api-status" class="cls-api-status" role="status" aria-live="polite">正在检查智能问答状态…</p>
+        <p id="cls-search-status" class="cls-search-status" role="status" aria-live="polite">输入关键词后即可搜索本页资料。</p>
+        <div id="cls-search-results" class="cls-search-results"></div>
+        <div id="cls-ai-answer" class="cls-ai-answer" hidden>
+          <h4>DeepSeek 皮影问答</h4>
+          <p id="cls-ai-question" class="cls-ai-question"></p>
+          <div id="cls-ai-text" class="cls-ai-text" role="status" aria-live="polite"></div>
+          <div id="cls-ai-references" class="cls-ai-references" hidden></div>
+        </div>
+      </div>
+      <div class="cls-block">
+        <h3>一 · 历史沿革</h3>
+        <div class="cls-timeline" id="cls-timeline"></div>
+      </div>
+      <div class="cls-block">
+        <h3>二 · 流派地图</h3>
+        <p class="cls-desc">一方水土一方戏。点击光点，看各地皮影的风采。</p>
+        <div class="cls-map" id="cls-map"></div>
+      </div>
+      <div class="cls-block">
+        <h3>三 · 制作八道工序</h3>
+        <div class="cls-steps" id="cls-steps"></div>
+      </div>
+      <div class="cls-block cls-quote">
+        <p>“一口道尽千古事，双手挥舞百万兵。”</p>
+        <p>皮影戏是具有千年传承的光影表演艺术，也常被视为现代动画与电影的重要文化先声之一。今天，你的每一次抬手，都是这门古老艺术的一次新生。</p>
+      </div>
+      <div class="cls-block cls-sources">
+        <h3>四 · 资料来源与说明</h3>
+        <p>历史沿革中的早期起源与海外传播存在不同学术观点，本页采用审慎表述；国家级与联合国非遗信息以官方名录为准。</p>
+        <ul>
+          <li><a href="https://www.mct.gov.cn/whzx/ggtz/200606/t20060609_694679.htm" target="_blank" rel="noopener noreferrer">文化和旅游部：第一批国家级非物质文化遗产名录</a></li>
+          <li><a href="https://ich.unesco.org/en/RL/chinese-shadow-puppetry-00421" target="_blank" rel="noopener noreferrer">UNESCO：Chinese shadow puppetry（2011）</a></li>
+          <li>离线说明见 <code>docs/非遗资料来源.md</code>。</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- 首次使用引导；摄像头只在用户主动点击检测后开启 -->
+<div id="quick-guide" class="quick-guide" hidden role="dialog" aria-modal="true" aria-labelledby="quick-guide-title" aria-describedby="quick-guide-text">
+  <div class="quick-guide-card">
+    <p id="quick-guide-progress" class="quick-guide-progress"></p>
+    <h2 id="quick-guide-title"></h2>
+    <p id="quick-guide-text" class="quick-guide-text"></p>
+    <button id="btn-guide-camera" class="btn btn-mini" type="button" hidden>检测并开启摄像头</button>
+    <p id="quick-guide-camera-status" class="quick-guide-camera-status" role="status" aria-live="polite"></p>
+    <div class="quick-guide-actions">
+      <button id="btn-guide-skip" class="btn btn-mini" type="button">稍后再看</button>
+      <button id="btn-guide-prev" class="btn btn-mini" type="button">上一步</button>
+      <button id="btn-guide-next" class="btn btn-mini btn-primary" type="button">下一步</button>
+    </div>
+  </div>
+</div>
+
+<!-- 摄像头小窗 -->
+<div id="camera-dock" class="hidden">
+  <div class="cam-box">
+    <video id="cam-video" playsinline muted></video>
+    <canvas id="cam-overlay"></canvas>
+    <button id="btn-cam-close" class="btn btn-mini" title="关闭摄像头">✕</button>
+    <p class="cam-hint">手掌在镜头前移动 · 张手=操控 · 握拳=亮相 · 伸一指=拍板</p>
+  </div>
+</div>
+
+<footer id="footer">
+  <p>《指尖灯影》｜ 第十四届全国大学生数字媒体科技作品及创意竞赛 · 命题五「民族文化·创新表达」参赛作品</p>
+  <p class="footer-dim">中文字体：霞鹜文楷（OFL-1.1）｜ 手势识别：MediaPipe Tasks Vision（Apache-2.0）｜ 角色美术为团队自绘；第三方说明见 THIRD_PARTY_NOTICES.md</p>
+</footer>
+
+<!-- 全局加载遮罩 -->
+<div id="loading-mask"><div class="lm-inner"><div class="lm-lantern">🏮</div><p>灯影亮起中……</p></div></div>
+
+<script src="js/config.js?v=20261009"></script>
+<script src="js/parts.js?v=20261009"></script>
+<script src="js/audio.js?v=20260927b"></script>
+<script src="js/puppet.js?v=20260927b"></script>
+<script src="js/stage.js?v=20261004a"></script>
+<script src="js/input.js?v=20261011"></script>
+<script src="js/drama.js?v=20261004a"></script>
+<script src="js/workshop.js?v=20260927b"></script>
+<script src="js/classroom-data.js?v=20261010"></script>
+<script src="js/classroom.js?v=20261011"></script>
+<script src="js/joints.js?v=20261007c"></script>
+<script src="js/main.js?v=20261009"></script>
+</body>
+</html>

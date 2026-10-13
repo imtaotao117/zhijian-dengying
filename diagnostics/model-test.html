@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><title>模型自检</title></head><body>
+<pre id="out" style="font:13px/1.8 monospace;white-space:pre-wrap">测试中…</pre>
+<script type="module">
+const out = document.getElementById('out');
+const lines = [];
+const log = t => { lines.push(t); out.textContent = lines.join('\n'); };
+const errText = e => (e && e.message) ? e.message
+  : (e && e.type === 'error' && e.target && (e.target.src || e.target.href)) ? '资源加载失败 ← ' + (e.target.src || e.target.href)
+  : (e && e.type) ? '错误事件 ' + e.type
+  : String(e);
+async function tryCreate(delegate) {
+  try {
+    const vision = await import('/assets/wasm/vision_bundle.mjs');
+    log('① vision_bundle.mjs 导入成功');
+    const fileset = await vision.FilesetResolver.forVisionTasks('/assets/wasm');
+    log('② FilesetResolver 成功');
+    const lm = await vision.HandLandmarker.createFromOptions(fileset, {
+      baseOptions: { modelAssetPath: '/assets/models/hand_landmarker.task', delegate },
+      runningMode: 'VIDEO', numHands: 2,
+    });
+    log('③ HandLandmarker 创建成功（delegate=' + delegate + '）');
+    if (lm.close) lm.close();
+    return true;
+  } catch (e) {
+    log('✘ delegate=' + delegate + ' 失败：' + errText(e));
+    return false;
+  }
+}
+const gpuOk = await tryCreate('GPU');
+let cpuOk = false;
+if (!gpuOk) { log('── GPU 失败，尝试 CPU ──'); cpuOk = await tryCreate('CPU'); }
+log('── 结论 ──');
+if (gpuOk) log('✅ 模型正常（GPU 模式）。应用里应能直接开启摄像头；若失败，请记录应用错误信息并继续检查摄像头权限。');
+else if (cpuOk) log('✅ 模型在 CPU 模式可用。应用已支持自动退回 CPU，正常使用即可。');
+else log('❌ 两种模式都失败：请检查浏览器硬件加速设置，或换用新版 Edge / Chrome；保留本页结果以便提交故障记录。');
+</script>
+</body></html>
