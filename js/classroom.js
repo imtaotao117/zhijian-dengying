@@ -116,6 +116,9 @@ window.Classroom = (() => {
         askButton.disabled = true;
         return;
       }
+      /* 是否为「纯静态托管」的在线演示版（GitHub Pages 等），无法运行 Node 服务端 */
+      const isStaticHost = location.hostname.endsWith('github.io') ||
+        (location.protocol.startsWith('http') && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1');
       try {
         const response = await fetch('/api/classroom/status', { cache: 'no-store' });
         if (!response.ok) throw new Error('status request failed');
@@ -126,7 +129,11 @@ window.Classroom = (() => {
           : '智能问答未配置：请在项目目录的 .env.local 中填写密钥，重启服务器并刷新页面。本地资料搜索仍可使用。', !data.configured);
       } catch {
         askButton.disabled = true;
-        setApiStatus('无法连接本地问答服务：请通过“启动服务器.bat”打开作品。本地资料搜索仍可使用。', true);
+        if (isStaticHost) {
+          setApiStatus('在线演示版：AI 智能问答需在本机（localhost）运行服务器后体验；本页资料搜索、时间轴、流派地图与工序图解均可正常使用，不受影响。', true);
+        } else {
+          setApiStatus('无法连接本地问答服务：请通过“启动服务器.bat”打开作品。本地资料搜索仍可使用。', true);
+        }
       }
     }
 
@@ -212,7 +219,13 @@ window.Classroom = (() => {
           setApiStatus('DeepSeek 密钥无效或权限不足，请更换密钥、重启服务器并刷新页面。', true);
         }
       } catch (error) {
-        answerText.textContent = error.name === 'AbortError' ? '等待超时，请稍后重试。' : '连接失败，请确认本地服务器正在运行。';
+        if (error.name === 'AbortError') {
+          answerText.textContent = '等待超时，请稍后重试。';
+        } else if (location.hostname.endsWith('github.io')) {
+          answerText.textContent = '当前为在线演示版，AI 问答需在本机服务器环境中使用；你仍可在本页浏览时间轴、流派地图与工序图解等全部非遗资料。';
+        } else {
+          answerText.textContent = '连接失败，请确认本地服务器正在运行。';
+        }
       } finally {
         clearTimeout(timeout);
         if (apiStatus.dataset.state !== 'error') askButton.disabled = false;
